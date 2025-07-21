@@ -6,21 +6,14 @@
   <title>CHC Airdrop</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
-  <style>
-    #countdown {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #00ffff;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
     <img src="logo.svg" alt="CHC Logo" class="logo" />
     <h1>CHC Airdrop</h1>
-    <p>Claim your 500k CHC now + earn for each referral</p>
+    <p>🎉 Claim <strong>500k $CHC</strong> now + earn <strong>2M $CHC</strong> per referral (max <strong>1B</strong>)</p>
 
-    <div id="countdown">Loading countdown...</div>
+    <div id="countdown"></div>
 
     <button id="connectBtn">Connect Wallet</button>
     <button id="claimBtn" disabled>Claim Airdrop</button>
@@ -51,37 +44,29 @@
 
   <script>
     let userAddress = null;
-    const airdropEnd = new Date("2025-08-05T23:59:59Z"); // End date (UTC)
+    const deadline = new Date("2025-08-01T00:00:00Z").getTime(); // ⏱ Countdown ends Aug 1, 2025
 
     function updateCountdown() {
-      const now = new Date();
-      const diff = airdropEnd - now;
+      const now = new Date().getTime();
+      const timeLeft = deadline - now;
 
-      if (diff <= 0) {
-        document.getElementById("countdown").innerText = "⛔ Airdrop has ended";
+      const cd = document.getElementById('countdown');
+      if (timeLeft > 0) {
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        cd.innerHTML = `⏳ Airdrop ends in: <strong>${days}d ${hours}h ${minutes}m ${seconds}s</strong>`;
+      } else {
+        cd.innerHTML = `🚨 Airdrop has ended. Manual approval required for late entries.`;
         document.getElementById("claimBtn").disabled = true;
-        document.getElementById("connectBtn").disabled = true;
-        document.getElementById("copyBtn").style.display = "none";
-        document.getElementById("referralLink").style.display = "none";
-        document.getElementById("shareButtons").style.display = "none";
-        return;
       }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-
-      document.getElementById("countdown").innerText =
-        `⏳ Ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
     async function connectWallet() {
-      if (new Date() > airdropEnd) return;
-
       if (window.ethereum) {
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -95,33 +80,28 @@
           document.getElementById('shareButtons').style.display = "block";
 
           document.getElementById('shareTelegram').href =
-            `https://t.me/share/url?url=${encodeURIComponent(referralURL)}&text=Claim free 500k CHC + earn more per referral!`;
+            `https://t.me/share/url?url=${encodeURIComponent(referralURL)}&text=Claim free 500k CHC + earn 2M per referral!`;
           document.getElementById('shareTwitter').href =
-            `https://twitter.com/intent/tweet?url=${encodeURIComponent(referralURL)}&text=🚀 Claim free 500k $CHC + earn more per referral! Join the ChillingCoin airdrop now! ❄️`;
+            `https://twitter.com/intent/tweet?url=${encodeURIComponent(referralURL)}&text=🚀 Claim 500k $CHC + earn 2M more per referral! Join the ChillingCoin airdrop! ❄️`;
 
-          document.getElementById('status').innerText = "Wallet connected: " + userAddress;
+          document.getElementById('status').innerText = "✅ Wallet connected: " + userAddress;
         } catch (error) {
-          document.getElementById('status').innerText = "Connection rejected.";
+          document.getElementById('status').innerText = "❌ Connection rejected.";
         }
       } else {
-        document.getElementById('status').innerText = "MetaMask not detected.";
+        document.getElementById('status').innerText = "❌ MetaMask not detected.";
       }
     }
 
     function copyReferralLink() {
       const link = document.getElementById('referralLink').innerText;
       navigator.clipboard.writeText(link);
-      alert("Referral link copied!");
+      alert("✅ Referral link copied!");
     }
 
     async function claimAirdrop() {
-      if (new Date() > airdropEnd) {
-        document.getElementById('status').innerText = "⛔ Airdrop has ended.";
-        return;
-      }
-
       if (!userAddress) {
-        document.getElementById('status').innerText = "Connect your wallet first.";
+        document.getElementById('status').innerText = "⚠️ Connect your wallet first.";
         return;
       }
 
@@ -136,12 +116,12 @@
 
         const data = await res.json();
         if (data.success) {
-          document.getElementById('status').innerText = "✅ Airdrop claimed successfully!";
+          document.getElementById('status').innerText = "🎉 Airdrop claimed successfully!";
         } else {
           document.getElementById('status').innerText = "❌ " + data.message;
         }
       } catch (err) {
-        document.getElementById('status').innerText = "Server error. Please try again.";
+        document.getElementById('status').innerText = "🚨 Server error. Try again.";
       }
     }
 
