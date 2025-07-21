@@ -76,8 +76,35 @@
       alert("Referral link copied!");
     }
 
+    async function claimAirdrop() {
+      if (!userAddress) {
+        document.getElementById('status').innerText = "Connect your wallet first.";
+        return;
+      }
+
+      const ref = new URLSearchParams(window.location.search).get("ref") || null;
+
+      try {
+        const res = await fetch("https://chc-airdrop-backend.onrender.com/claim", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ wallet: userAddress.toLowerCase(), ref })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('status').innerText = "✅ Airdrop claimed successfully!";
+        } else {
+          document.getElementById('status').innerText = "❌ " + data.message;
+        }
+      } catch (err) {
+        document.getElementById('status').innerText = "Server error. Please try again.";
+      }
+    }
+
     document.getElementById('connectBtn').addEventListener('click', connectWallet);
     document.getElementById('copyBtn').addEventListener('click', copyReferralLink);
+    document.getElementById('claimBtn').addEventListener('click', claimAirdrop);
   </script>
 </body>
 </html>
