@@ -13,6 +13,21 @@ async function connectWallet() {
       connectBtn.innerText = "Connected";
       claimBtn.disabled = false;
       showReferralLink();
+
+      // Show community follow steps
+      statusText.innerHTML = `
+        <div class="airdrop-confirm">
+          <p>✅ Wallet connected!</p>
+          <p><strong>You're now registered.</strong></p>
+          <p>👉 Please follow the steps below to be approved for the airdrop:</p>
+          <ul class="airdrop-steps">
+            <li>🔹 Join our <a href="https://t.me/Chillingcoinbsc0" target="_blank">Telegram</a></li>
+            <li>🔹 Follow us on <a href="https://x.com/chillingchc" target="_blank">X (Twitter)</a></li>
+            <li>🔹 Join our <a href="https://discord.gg/Afguv5Nv" target="_blank">Discord</a></li>
+          </ul>
+          <p>📢 You’ll be manually approved and rewarded after verification!</p>
+        </div>
+      `;
     } catch (err) {
       statusText.innerText = "❌ Wallet connection failed.";
     }
@@ -58,4 +73,3 @@ async function claimAirdrop() {
 }
 
 connectBtn.onclick = connectWallet;
-claimBtn.onclick = claimAirdrop;
