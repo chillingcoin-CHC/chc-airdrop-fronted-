@@ -17,6 +17,13 @@
     <button id="claimBtn" disabled>Claim Airdrop</button>
 
     <p id="referralLink" style="display:none;"></p>
+    <button id="copyBtn" style="display:none;">Copy Referral Link</button>
+
+    <div id="shareButtons" style="display:none; margin-top: 10px;">
+      <a href="#" id="shareTelegram" target="_blank">📨 Share on Telegram</a> |
+      <a href="#" id="shareTwitter" target="_blank">🐦 Share on X</a>
+    </div>
+
     <p id="status"></p>
 
     <div class="socials">
@@ -31,7 +38,46 @@
         <img src="https://img.icons8.com/ios-filled/50/00ffff/discord-logo.png" alt="Discord" width="32" />
       </a>
     </div>
+  </div>
 
-  </div> <!-- close container -->
+  <script>
+    let userAddress = null;
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          userAddress = accounts[0];
+          document.getElementById('claimBtn').disabled = false;
+
+          const referralURL = window.location.origin + "?ref=" + userAddress.toLowerCase();
+          document.getElementById('referralLink').innerText = referralURL;
+          document.getElementById('referralLink').style.display = "block";
+          document.getElementById('copyBtn').style.display = "inline-block";
+          document.getElementById('shareButtons').style.display = "block";
+
+          document.getElementById('shareTelegram').href =
+            `https://t.me/share/url?url=${encodeURIComponent(referralURL)}&text=Claim free 500k CHC + earn more per referral!`;
+          document.getElementById('shareTwitter').href =
+            `https://twitter.com/intent/tweet?url=${encodeURIComponent(referralURL)}&text=🚀 Claim free 500k $CHC + earn more per referral! Join the ChillingCoin airdrop now! ❄️`;
+
+          document.getElementById('status').innerText = "Wallet connected: " + userAddress;
+        } catch (error) {
+          document.getElementById('status').innerText = "Connection rejected.";
+        }
+      } else {
+        document.getElementById('status').innerText = "MetaMask not detected.";
+      }
+    }
+
+    function copyReferralLink() {
+      const link = document.getElementById('referralLink').innerText;
+      navigator.clipboard.writeText(link);
+      alert("Referral link copied!");
+    }
+
+    document.getElementById('connectBtn').addEventListener('click', connectWallet);
+    document.getElementById('copyBtn').addEventListener('click', copyReferralLink);
+  </script>
 </body>
 </html>
