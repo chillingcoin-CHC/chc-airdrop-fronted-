@@ -6,23 +6,21 @@
   <title>CHC Airdrop</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <style>
+    #countdown {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #00ffff;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <img src="logo.svg" alt="CHC Logo" class="logo" />
-
     <h1>CHC Airdrop</h1>
-    <p><strong>🎁 Claim your 500k CHC now + earn for each referral</strong></p>
+    <p>Claim your 500k CHC now + earn for each referral</p>
 
-    <!-- Urgency Notice -->
-    <p style="color: #ff4444; font-weight: bold;">
-      ⏰ Limited time only! Manual distribution will close soon.
-    </p>
-
-    <!-- Manual Distribution Notice -->
-    <p style="font-size: 14px; color: #ccc;">
-      📢 All CHC airdrops will be distributed manually by the team after verification. No automatic transfers.
-    </p>
+    <div id="countdown">Loading countdown...</div>
 
     <button id="connectBtn">Connect Wallet</button>
     <button id="claimBtn" disabled>Claim Airdrop</button>
@@ -53,8 +51,37 @@
 
   <script>
     let userAddress = null;
+    const airdropEnd = new Date("2025-08-05T23:59:59Z"); // End date (UTC)
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = airdropEnd - now;
+
+      if (diff <= 0) {
+        document.getElementById("countdown").innerText = "⛔ Airdrop has ended";
+        document.getElementById("claimBtn").disabled = true;
+        document.getElementById("connectBtn").disabled = true;
+        document.getElementById("copyBtn").style.display = "none";
+        document.getElementById("referralLink").style.display = "none";
+        document.getElementById("shareButtons").style.display = "none";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("countdown").innerText =
+        `⏳ Ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
 
     async function connectWallet() {
+      if (new Date() > airdropEnd) return;
+
       if (window.ethereum) {
         try {
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -88,6 +115,11 @@
     }
 
     async function claimAirdrop() {
+      if (new Date() > airdropEnd) {
+        document.getElementById('status').innerText = "⛔ Airdrop has ended.";
+        return;
+      }
+
       if (!userAddress) {
         document.getElementById('status').innerText = "Connect your wallet first.";
         return;
