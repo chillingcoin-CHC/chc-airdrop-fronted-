@@ -1,8 +1,9 @@
-let userAddress = "";
 const connectBtn = document.getElementById("connectBtn");
 const claimBtn = document.getElementById("claimBtn");
 const statusText = document.getElementById("status");
 const referralText = document.getElementById("referralLink");
+
+let userAddress = null;
 
 async function connectWallet() {
   if (window.ethereum) {
@@ -13,10 +14,10 @@ async function connectWallet() {
       claimBtn.disabled = false;
       showReferralLink();
     } catch (err) {
-      statusText.innerText = "Wallet connection failed.";
+      statusText.innerText = "❌ Wallet connection failed.";
     }
   } else {
-    statusText.innerText = "MetaMask not found!";
+    statusText.innerText = "❌ MetaMask not found!";
   }
 }
 
@@ -26,14 +27,14 @@ function getReferralCode() {
 }
 
 function showReferralLink() {
-  const link = ${window.location.origin}?ref=${userAddress};
+  const link = `${window.location.origin}?ref=${userAddress}`;
   referralText.style.display = "block";
-  referralText.innerText = Your Referral Link:\n${link};
+  referralText.innerText = `Your Referral Link:\n${link}`;
 }
 
 async function claimAirdrop() {
   claimBtn.disabled = true;
-  statusText.innerText = "Claiming airdrop...";
+  statusText.innerText = "⏳ Claiming airdrop...";
 
   try {
     const ref = getReferralCode();
@@ -45,16 +46,16 @@ async function claimAirdrop() {
 
     const data = await response.json();
     if (data.success) {
-      statusText.innerText = ✅ Airdrop claimed successfully!;
+      statusText.innerText = "✅ Airdrop claimed successfully!";
     } else {
-      statusText.innerText = ❌ ${data.message};
+      statusText.innerText = `❌ ${data.message}`;
     }
   } catch (err) {
-    statusText.innerText = "Error claiming airdrop.";
+    statusText.innerText = "❌ Error claiming airdrop.";
   } finally {
     claimBtn.disabled = false;
   }
 }
 
 connectBtn.onclick = connectWallet;
-claimBtn.onclick = claimAirdrop;
+claimBtn.onclick = claimAirdrop;
