@@ -41,3 +41,17 @@ button:disabled {
   margin: 0 10px;
   text-decoration: none;
 }
+.socials h3 {
+  margin-bottom: 10px;
+  color: #00ffff;
+  font-size: 18px;
+}
+
+.socials img {
+  transition: transform 0.2s ease;
+  filter: brightness(0) invert(1);
+}
+
+.socials img:hover {
+  transform: scale(1.2);
+}
